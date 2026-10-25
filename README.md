@@ -2,11 +2,15 @@
 
 Lab1 Phase 1 的实现：TypeScript + 面向对象，用 **Command** 模式做编辑与撤销、用 **Composite** 模式统一容器与叶子，实现一个以 `id` 寻址的 SVG 编辑器命令行。
 
+**代码仓库：[https://github.com/Truhide/SVG-CLI](https://github.com/Truhide/SVG-CLI)**
+
 ## 快速开始
 
 需要 Node.js 20 以上（开发环境为 Node 24）。
 
 ```bash
+git clone https://github.com/Truhide/SVG-CLI.git
+cd SVG-CLI
 npm install
 npm run cli
 ```

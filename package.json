@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "description": "Lab1 Phase 1 - an SVG editor driven from a REPL (Command + Composite)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Truhide/SVG-CLI.git"
+  },
   "scripts": {
     "cli": "tsx src/cli/main.ts",
     "build": "tsc -p tsconfig.json",
