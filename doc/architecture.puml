@@ -1,0 +1,55 @@
+@startuml lab1-svg-editor
+title Lab1 Phase 1 - SVG CLI 编辑器组件图
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+left to right direction
+
+package "cli（驱动 / 组合根）" {
+  [main.ts] as main
+  [CliApp] as app
+  [ConsoleOutput] as out
+}
+
+package "application（用例层）" {
+  [EditorSession] as session
+  [CommandRegistry] as registry
+  [commands\nCreate / Move / Group / ...] as commands
+  [CommandHistory] as history
+  [ShapeFactory\n+ ShapeProvider] as shapes
+  [Tree / Show Formatter] as format
+  [ports\nDocumentCodec / FileStore] as ports
+}
+
+package "domain（模型层）" {
+  [Shape / GroupShape\nRect / Circle / ...] as shape
+  [Document] as document
+  [Transform2D / Numbers] as values
+}
+
+package "infrastructure（适配器）" {
+  [SvgCodec] as codec
+  [SvgReader / SvgWriter] as svg
+  [XmlParser] as xml
+  [NodeFileStore] as fs
+}
+
+main --> app
+main --> session
+main --> codec
+main --> fs
+app --> session
+session --> registry
+session --> history
+session --> shapes
+session --> ports
+registry --> commands
+commands --> document
+commands --> format
+commands --> shape
+document --> shape
+codec ..|> ports : implements
+fs ..|> ports : implements
+codec --> shapes
+svg --> xml
+@enduml
