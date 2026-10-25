@@ -2,6 +2,7 @@
 import { GroupShape } from '../../domain/GroupShape';
 import type { Shape } from '../../domain/Shape';
 import { CommandResult } from '../CommandResult';
+import { CountLabel } from '../format/CountLabel';
 import type { EditorSession } from '../EditorSession';
 import type { Token } from '../Token';
 import { EditSessionCommand } from './EditSessionCommand';
@@ -60,7 +61,7 @@ export class GroupCommand extends EditSessionCommand {
     this.parent = parent;
     this.insertionIndex = insertionIndex;
     this.placements = placements;
-    return CommandResult.ok(`${group.label()} created with ${shapes.length} children`);
+    return CommandResult.ok(`${group.label()} created with ${CountLabel.children(shapes.length)}`);
   }
 
   override undo(): CommandResult {
@@ -78,7 +79,7 @@ export class GroupCommand extends EditSessionCommand {
         Math.min(child.index, child.parent.childCount),
       );
     }
-    return CommandResult.ok(`${group.label()} dissolved (${children.length} children restored)`);
+    return CommandResult.ok(`${group.label()} dissolved (${CountLabel.children(children.length)} restored)`);
   }
 
   override redo(): CommandResult {
@@ -92,7 +93,7 @@ export class GroupCommand extends EditSessionCommand {
       this.document.attach(child.shape, group, group.childCount);
     }
     return CommandResult.ok(
-      `${group.label()} created with ${this.placements.length} children`,
+      `${group.label()} created with ${CountLabel.children(this.placements.length)}`,
     );
   }
 

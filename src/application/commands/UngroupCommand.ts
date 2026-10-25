@@ -2,6 +2,7 @@
 import { GroupShape } from '../../domain/GroupShape';
 import type { Shape } from '../../domain/Shape';
 import { CommandResult } from '../CommandResult';
+import { CountLabel } from '../format/CountLabel';
 import type { EditorSession } from '../EditorSession';
 import type { Token } from '../Token';
 import { EditSessionCommand } from './EditSessionCommand';
@@ -43,7 +44,7 @@ export class UngroupCommand extends EditSessionCommand {
     this.parent = parent;
     this.index = index;
     this.children = children;
-    return CommandResult.ok(`${group.label()} ungrouped (${children.length} children)`);
+    return CommandResult.ok(`${group.label()} ungrouped (${CountLabel.children(children.length)})`);
   }
 
   override undo(): CommandResult {
@@ -56,7 +57,7 @@ export class UngroupCommand extends EditSessionCommand {
     for (const child of this.children) {
       this.document.attach(child, group, group.childCount);
     }
-    return CommandResult.ok(`${group.label()} regrouped (${this.children.length} children)`);
+    return CommandResult.ok(`${group.label()} regrouped (${CountLabel.children(this.children.length)})`);
   }
 
   override redo(): CommandResult {
@@ -68,7 +69,7 @@ export class UngroupCommand extends EditSessionCommand {
       this.document.attach(child, parent, this.index + offset);
     });
     this.document.detach(group);
-    return CommandResult.ok(`${group.label()} ungrouped (${children.length} children)`);
+    return CommandResult.ok(`${group.label()} ungrouped (${CountLabel.children(children.length)})`);
   }
 
   private requireGroup(): GroupShape {

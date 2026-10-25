@@ -40,9 +40,13 @@ export class CommandLine {
         while (index < line.length) {
           const current = line[index];
           if (current === '\\' && index + 1 < line.length) {
-            value += line[index + 1];
-            index += 2;
-            continue;
+            const next = line[index + 1];
+            // Only \" and \\ are escapes: Windows paths keep their backslashes.
+            if (next === '"' || next === '\\') {
+              value += next;
+              index += 2;
+              continue;
+            }
           }
           if (current === '"') {
             closed = true;
