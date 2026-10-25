@@ -40,6 +40,12 @@ test('move on a container moves every descendant', () => {
   assert.deepEqual(editor.run('show r'), ['rect#r  parent=g#g2', '  x=10 y=20 width=5 height=5']);
 });
 
+test('grouping a single shape still reports a grammatical child count', () => {
+  const editor = new TestEditor();
+  editor.runAll('init', 'create rect a 0 0 1 1');
+  assert.deepEqual(editor.run('group solo a'), ['g#solo created with 1 child']);
+});
+
 test('grouping shapes from different parents keeps their order', () => {
   const editor = new TestEditor();
   editor.runAll(

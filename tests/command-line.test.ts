@@ -36,6 +36,11 @@ test('comments and blank lines produce no output', () => {
   assert.deepEqual(editor.run('\t# indented comment'), []);
 });
 
+test('backslashes in quoted Windows paths are preserved', () => {
+  const line = CommandLine.parse('save "C:\\temp\\demo.svg"');
+  assert.equal(line.args[0].value, 'C:\\temp\\demo.svg');
+});
+
 test('a colour token is not mistaken for a comment', () => {
   const editor = new TestEditor();
   editor.run('init');
