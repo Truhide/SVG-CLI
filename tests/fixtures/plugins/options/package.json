@@ -1,0 +1,9 @@
+{
+  "name": "@fixture/plugin-options",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "contributes": {
+    "commands": ["opts"]
+  }
+}

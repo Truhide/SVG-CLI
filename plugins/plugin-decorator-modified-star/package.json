@@ -1,0 +1,10 @@
+{
+  "name": "@svgframe/plugin-decorator-modified-star",
+  "version": "1.0.0",
+  "private": true,
+  "description": "modified-star decorator: marks rows whose content differs from the last save",
+  "main": "index.ts",
+  "contributes": {
+    "decorators": ["modified-star"]
+  }
+}

@@ -1,0 +1,24 @@
+# Phase 1 section 6 base session, replayed by both assemblies.
+# Only command lines here: no prompt, no expected output.
+init 800 600
+create rect bg 0 0 800 600 #ffffff
+create text title 20 40 "My Diagram"
+create circle c1 100 100 20 red
+create rect rbox 200 80 60 60 #3366ff
+group markers c1 rbox
+tree
+move c1 30 0
+undo
+redo
+set title text "My Diagram v2"
+undo
+group bad c1 markers
+delete rbox
+undo
+save build/cli-1-base.svg
+show c1
+tree markers
+help
+canvas
+canvas 640 480
+undo

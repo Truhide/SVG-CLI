@@ -1,0 +1,68 @@
+svg-editor 0.1 — type 'help' for commands
+
+canvas 800x600 created
+rect#bg created
+text#title created
+circle#c1 created
+rect#rbox created
+g#markers created with 2 children
+svg (800x600)
+├── rect#bg     x=0 y=0 w=800 h=600 fill=#ffffff
+├── text#title  (20,40) "My Diagram"
+└── g#markers
+    ├── circle#c1   cx=100 cy=100 r=20 fill=red
+    └── rect#rbox   x=200 y=80 w=60 h=60 fill=#3366ff
+circle#c1 moved to (130,100)
+circle#c1 moved back to (100,100)
+circle#c1 moved to (130,100)
+text#title updated: text="My Diagram v2"
+text#title updated: text="My Diagram"
+error: cannot group a container into its own descendant: markers
+rect#rbox deleted
+rect#rbox restored into g#markers
+saved to build/cli-1-base.svg (5 elements)
+circle#c1  parent=g#markers
+  cx=130 cy=100 r=20
+  fill=red
+g#markers
+├── circle#c1  cx=130 cy=100 r=20 fill=red
+└── rect#rbox  x=200 y=80 w=60 h=60 fill=#3366ff
+svg-editor 0.1 - commands
+
+lines starting with '#' are comments; use double quotes for values with spaces
+
+document (undo/redo is disabled after these commands)
+  init [w] [h]                     new canvas, default 800x600
+  read <file.svg>                  load a document, assigns missing ids
+  save [file.svg]                  save, defaults to the last read path
+  canvas [w] [h]                   show or change the canvas size
+
+editing (one command = one undo unit)
+  create <type> <id> [params] [in <containerId>]
+    rect <x> <y> <w> <h> [fill]
+    circle <cx> <cy> <r> [fill]
+    ellipse <cx> <cy> <rx> <ry> [fill]
+    line <x1> <y1> <x2> <y2> [stroke]
+    text <x> <y> "content"
+    g
+  delete <id>                      delete a shape or a whole container
+  move <id> <dx> <dy>              relative move, containers move their children
+  scale <id> <factor>              multiply every geometry attribute
+  set <id> <attr> <value>          fill | stroke | stroke-width | geometry | text
+  group <newGid> <id1> <id2> ...   wrap existing shapes into a new container
+  ungroup <gid>                    move children up to the parent
+  addto <gid> <id>                 move an existing shape into a container
+  front <id>                       raise to the top of its siblings
+  back <id>                        lower to the bottom of its siblings
+
+inspection
+  tree [id]                        structure with inline geometry
+  show <id>                        attribute details
+  help                             this text
+
+history
+  undo
+  redo
+canvas 800x600
+canvas 640x480 updated
+error: undo not allowed after io command

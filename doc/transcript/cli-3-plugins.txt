@@ -1,0 +1,16 @@
+# Fixed working directory fixture: `dir` must list exactly these entries.
+init 800 600
+create rect r1 0 0 10 10 red
+stats
+dir
+create box n1 120 100 160 60 "开始"
+stats
+tree
+set n1 fill #f5a623
+set n1 label "新标签"
+tree
+undo
+delete n1-rect
+ungroup n1
+set r1 opacity 0.5
+stats

@@ -1,0 +1,10 @@
+{
+  "name": "@svgframe/plugin-command-dir",
+  "version": "1.0.0",
+  "private": true,
+  "description": "dir command: list the CLI working directory through a directory adapter",
+  "main": "index.ts",
+  "contributes": {
+    "commands": ["dir"]
+  }
+}

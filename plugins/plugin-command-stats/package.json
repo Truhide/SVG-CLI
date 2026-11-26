@@ -1,0 +1,10 @@
+{
+  "name": "@svgframe/plugin-command-stats",
+  "version": "1.0.0",
+  "private": true,
+  "description": "stats command: leaf counts per shape type",
+  "main": "index.ts",
+  "contributes": {
+    "commands": ["stats"]
+  }
+}

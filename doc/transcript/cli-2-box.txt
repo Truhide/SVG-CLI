@@ -1,0 +1,24 @@
+# Phase 1 section 6.1 session, version B: the same flowchart built with the
+# `box` shape plugin.  Requires plugin-shape-box (shape + attributes + label)
+# and plugin-decorator-modified-star (the `*` labels).
+init 800 600
+create g flowchart
+create box n1 120 100 160 60 "开始"
+create box n2 520 100 160 60 "处理数据"
+addto flowchart n1
+addto flowchart n2
+create line arrow1 280 130 520 130 black in flowchart
+tree
+set n1 fill #f5a623
+set n2 label "处理数据 v2"
+tree
+undo
+undo
+redo
+tree
+save build/cli-2-box.svg
+read build/cli-2-box.svg
+tree
+move n2 0 100
+undo
+stats
