@@ -1,12 +1,11 @@
 import type { PluginContext } from '../application/extension/PluginContext';
+import modifiedStar from '../../plugins/plugin-decorator-modified-star';
 
 /**
  * Composition root for the optional plugins ("方式 A").
  *
- * Nothing is wired here yet: this commit only establishes the framework, the
- * four extension points and the built-in plugin packs.  Each later plugin
- * adds one import and one `activate` call.
+ * Wiring by code: adding a plugin means one import and one `activate` here.
  */
-export function registerOptionalPlugins(_context: PluginContext): void {
-  // no optional plugin is wired in this step
+export function registerOptionalPlugins(context: PluginContext): void {
+  modifiedStar.activate(context);
 }
