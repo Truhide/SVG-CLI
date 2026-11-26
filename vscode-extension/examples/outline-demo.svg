@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Outline demo: comments, CDATA and quoted `>` inside an attribute. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" data-note="x > y" width="320" height="200">
+  <defs>
+    <linearGradient id="fade">
+      <stop offset="0%" stop-color="#4a90d9"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <g id="canvas" transform="translate(10,10)">
+    <rect id="frame" x="0" y="0" width="300" height="180" fill="url(#fade)" stroke="#333"/>
+    <text id="caption" x="12" y="26"><![CDATA[  步骤 1: 开始  ]]></text>
+    <g id="nodes">
+      <ellipse id="step-1" cx="80" cy="90" rx="50" ry="24" fill="#d9eaf7"/>
+      <line id="link-1" x1="130" y1="90" x2="180" y2="90" stroke="#333"/>
+      <path id="arrow" d="M180 85 L190 90 L180 95 Z" fill="#333"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,59 @@
+{
+  "name": "vscode-svg-outline",
+  "displayName": "SVG Outline & Badge",
+  "description": "Lab1 Phase 2 - SVG file badge in Explorer plus an outline of the SVG element tree",
+  "version": "0.1.0",
+  "publisher": "lab1",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:svg",
+    "workspaceContains:**/*.svg",
+    "onCommand:svgOutline.focusOutline"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "svg",
+        "aliases": [
+          "SVG",
+          "svg"
+        ],
+        "extensions": [
+          ".svg"
+        ],
+        "mimetypes": [
+          "image/svg+xml"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "svgOutline.focusOutline",
+        "title": "聚焦 SVG 大纲 (Focus SVG Outline)",
+        "category": "SVG"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "svgOutline.focusOutline",
+        "key": "ctrl+alt+o",
+        "mac": "cmd+alt+o",
+        "when": "editorLangId == svg || resourceExtname == .svg"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "node ../node_modules/typescript/bin/tsc -p tsconfig.json",
+    "watch": "node ../node_modules/typescript/bin/tsc -p tsconfig.json --watch",
+    "test": "cd .. && node --import tsx --test vscode-extension/tests/outline.test.ts"
+  },
+  "devDependencies": {}
+}
