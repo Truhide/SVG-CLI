@@ -1,6 +1,6 @@
 import type { DecodedDocument } from '../../application/ports/DecodedDocument';
 import type { DocumentCodec } from '../../application/ports/DocumentCodec';
-import type { ShapeFactory } from '../../application/shapes/ShapeFactory';
+import type { ShapeRegistry } from '../../application/extension/ShapeRegistry';
 import type { Document } from '../../domain/Document';
 import { SvgReader } from './SvgReader';
 import { SvgWriter } from './SvgWriter';
@@ -8,10 +8,11 @@ import { SvgWriter } from './SvgWriter';
 /** Codec port implementation backed by the SVG reader/writer pair. */
 export class SvgCodec implements DocumentCodec {
   private readonly reader: SvgReader;
-  private readonly writer = new SvgWriter();
+  private readonly writer: SvgWriter;
 
-  constructor(factory: ShapeFactory) {
-    this.reader = new SvgReader(factory);
+  constructor(registry: ShapeRegistry) {
+    this.reader = new SvgReader(registry);
+    this.writer = new SvgWriter(registry);
   }
 
   decode(xml: string): DecodedDocument {

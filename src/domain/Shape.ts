@@ -1,7 +1,6 @@
 import { EditorError } from './errors/EditorError';
 import { Numbers } from './Numbers';
 import { StyleAttributes } from './StyleAttributes';
-import type { ShapeVisitor } from './ShapeVisitor';
 import type { GroupShape } from './GroupShape';
 
 export type MoveVerb = 'moved' | 'moved back';
@@ -11,10 +10,13 @@ export type MoveVerb = 'moved' | 'moved back';
  *
  * The class hierarchy is the shape model: each subclass owns its geometry as
  * private fields and knows how to translate, scale, validate and describe
- * itself.  There is deliberately no `switch (type)` anywhere - operations
- * that need the concrete type go through {@link ShapeVisitor}, while
- * container semantics are expressed by overriding `children`/`move` in
+ * itself.  There is deliberately no `switch (type)` anywhere - the only
+ * concrete-type dispatch is the `ShapeRegistry` lookup by {@link Shape.kind},
+ * and container semantics are expressed by overriding `children`/`move` in
  * {@link GroupShape} (Composite).
+ *
+ * Phase 2 moved the five leaf classes out of the kernel: they now live in
+ * `src/plugins/builtin-shapes` and only this abstract contract is shared.
  */
 export abstract class Shape {
   private readonly shapeId: string;
@@ -26,6 +28,17 @@ export abstract class Shape {
   }
 
   abstract readonly typeName: string;
+
+  /**
+   * Registry key of the provider that owns this shape.
+   *
+   * It equals `typeName` unless a plugin reuses an existing element: `box`
+   * is drawn as `<g>` (`typeName`), but is registered and looked up as
+   * `box` (`kind`).
+   */
+  get kind(): string {
+    return this.typeName;
+  }
 
   get id(): string {
     return this.shapeId;
@@ -117,8 +130,6 @@ export abstract class Shape {
     const point = this.referencePoint();
     return `${this.label()} ${verb} to (${Numbers.format(point.x)},${Numbers.format(point.y)})`;
   }
-
-  abstract accept<R>(visitor: ShapeVisitor<R>): R;
 
   /** Compact geometry for the tree, e.g. `x=0 y=0 w=10 h=20`. */
   abstract summarizeGeometry(): string;

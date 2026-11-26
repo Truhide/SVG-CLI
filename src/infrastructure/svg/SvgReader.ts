@@ -1,4 +1,4 @@
-import type { ShapeFactory } from '../../application/shapes/ShapeFactory';
+import type { ShapeRegistry } from '../../application/extension/ShapeRegistry';
 import type { DecodedDocument } from '../../application/ports/DecodedDocument';
 import { Document } from '../../domain/Document';
 import { EditorError } from '../../domain/errors/EditorError';
@@ -19,9 +19,13 @@ import { XmlShapeSource } from './XmlShapeSource';
  * missing/duplicate ids with warnings, fold group transforms into leaf
  * coordinates, and delegate every type specific detail to the shape
  * providers (the same registry `create` uses).
+ *
+ * The reader has no per-type knowledge: `providerForElement` picks the
+ * provider (a later plugin may claim `<g data-kind="box">`), `verify` lets it
+ * reject a malformed instance after the children are attached.
  */
 export class SvgReader {
-  constructor(private readonly factory: ShapeFactory) {}
+  constructor(private readonly registry: ShapeRegistry) {}
 
   read(xml: string): DecodedDocument {
     const warnings: string[] = [];
@@ -53,7 +57,9 @@ export class SvgReader {
     allocator: IdAllocator,
   ): Shape | null {
     const tag = SvgReader.localName(element.name).toLowerCase();
-    if (!this.factory.isKnownType(tag)) {
+    const source = new XmlShapeSource(element);
+    const provider = this.registry.providerForElement(tag, source);
+    if (provider === null) {
       warnings.push(`warning: unsupported element <${tag}> skipped`);
       return null;
     }
@@ -62,19 +68,21 @@ export class SvgReader {
     );
     const effective = parentTransform.compose(local);
     const id = SvgReader.resolveId(element, tag, warnings, used, allocator);
-    const shape = this.factory.importFrom(tag, id, new XmlShapeSource(element));
+    const shape = provider.importFrom(id, source);
 
-    if (shape instanceof GroupShape) {
+    if (shape.isContainer) {
+      const container = shape as GroupShape;
       for (const child of element.elements) {
         const imported = this.importElement(child, effective, warnings, used, allocator);
         if (imported !== null) {
-          shape.appendChild(imported);
+          container.appendChild(imported);
         }
       }
     } else if (!effective.isIdentity) {
       shape.scale(effective.scale);
       shape.move(effective.dx, effective.dy);
     }
+    provider.verify?.(shape);
     return shape;
   }
 

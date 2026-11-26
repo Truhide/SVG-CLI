@@ -1,6 +1,5 @@
 import { Numbers } from './Numbers';
 import { Shape } from './Shape';
-import type { ShapeVisitor } from './ShapeVisitor';
 import type { MoveVerb } from './Shape';
 
 /**
@@ -34,6 +33,25 @@ export class GroupShape extends Shape {
     return this.childShapes.length;
   }
 
+  /**
+   * `ungroup` asks before dissolving a container.  A composite shape can
+   * refuse (the `box` plugin does, its parts are not free-standing).
+   */
+  get canUngroup(): boolean {
+    return true;
+  }
+
+  /**
+   * Called by `Document.detach` before a child leaves this container.
+   *
+   * The default accepts everything; a container with an invariant (a `box`
+   * without its rect is not a box) throws here, which covers `delete`,
+   * `addto`, `group` and `ungroup` in one place.
+   */
+  beforeRemoveChild(_child: Shape): void {
+    // open container: any child may leave
+  }
+
   indexOf(shape: Shape): number {
     return this.childShapes.indexOf(shape);
   }
@@ -61,10 +79,6 @@ export class GroupShape extends Shape {
 
   override moveFeedback(verb: MoveVerb, dx: number, dy: number): string {
     return `${this.label()} ${verb} by (${Numbers.format(dx)},${Numbers.format(dy)})`;
-  }
-
-  override accept<R>(visitor: ShapeVisitor<R>): R {
-    return visitor.visitGroup(this);
   }
 
   override summarizeGeometry(): string {

@@ -1,4 +1,4 @@
-import type { ShapeSource } from '../../application/shapes/ShapeSource';
+import type { ShapeSource } from '../../application/extension/ShapeSource';
 import type { XmlElement } from '../xml/XmlElement';
 
 /** Adapts the XML tree to the neutral source interface of shape providers. */

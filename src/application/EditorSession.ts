@@ -3,16 +3,35 @@ import { EditorError } from '../domain/errors/EditorError';
 import type { Command } from './Command';
 import { CommandHistory } from './CommandHistory';
 import { CommandLine } from './CommandLine';
-import { CommandRegistry } from './CommandRegistry';
 import type { CommandResult } from './CommandResult';
+import type { AttributeHandlerRegistry } from './extension/AttributeHandler';
+import type { CommandRegistry } from './extension/CommandRegistry';
+import type { EditorEvents } from './extension/EditorEvents';
+import type { ShapeRegistry } from './extension/ShapeRegistry';
+import type { TreeDecoratorRegistry } from './extension/TreeDecorator';
 import type { DocumentCodec } from './ports/DocumentCodec';
 import type { FileStore } from './ports/FileStore';
-import type { ShapeFactory } from './shapes/ShapeFactory';
+
+/**
+ * Everything the session needs from the surrounding application.
+ *
+ * Grouped in one object so the four extension points travel together and the
+ * session constructor does not grow a parameter per plugin stage.
+ */
+export interface SessionEnvironment {
+  readonly codec: DocumentCodec;
+  readonly files: FileStore;
+  readonly shapes: ShapeRegistry;
+  readonly commands: CommandRegistry;
+  readonly decorators: TreeDecoratorRegistry;
+  readonly attributes: AttributeHandlerRegistry;
+  readonly events: EditorEvents;
+}
 
 /**
  * Use-case facade of the editor.
  *
- * It owns the current document, the undo history and the two ports; the REPL
+ * It owns the current document, the undo history and the ports; the REPL
  * is only one possible driver of it (a script or an agent channel would call
  * `execute` with the same strings).  Commands are executed through a
  * registry and never print, so the whole session is testable without IO.
@@ -21,13 +40,32 @@ export class EditorSession {
   private documentValue: Document | null = null;
   private pathValue: string | null = null;
   private readonly historyValue = new CommandHistory();
-  private readonly registryValue = new CommandRegistry();
 
-  constructor(
-    readonly codec: DocumentCodec,
-    readonly files: FileStore,
-    readonly shapeFactory: ShapeFactory,
-  ) {}
+  constructor(private readonly env: SessionEnvironment) {}
+
+  get codec(): DocumentCodec {
+    return this.env.codec;
+  }
+
+  get files(): FileStore {
+    return this.env.files;
+  }
+
+  get shapes(): ShapeRegistry {
+    return this.env.shapes;
+  }
+
+  get commands(): CommandRegistry {
+    return this.env.commands;
+  }
+
+  get decorators(): TreeDecoratorRegistry {
+    return this.env.decorators;
+  }
+
+  get attributes(): AttributeHandlerRegistry {
+    return this.env.attributes;
+  }
 
   get document(): Document | null {
     return this.documentValue;
@@ -51,6 +89,14 @@ export class EditorSession {
   replaceDocument(document: Document, path: string | null): void {
     this.documentValue = document;
     this.pathValue = path;
+    this.markSaved();
+  }
+
+  /** Announces "the document on screen is now the saved one" to decorators. */
+  markSaved(): void {
+    if (this.documentValue !== null) {
+      this.env.events.emitSaved(this.documentValue);
+    }
   }
 
   rememberPath(path: string): void {
@@ -65,7 +111,7 @@ export class EditorSession {
     }
     try {
       const commandLine = CommandLine.parse(trimmed);
-      const command = this.registryValue.create(commandLine.name, this, commandLine.args);
+      const command = this.env.commands.create(commandLine.name, this, commandLine.args);
       if (command === null) {
         throw new EditorError(`unknown command: ${commandLine.name}`);
       }
@@ -101,7 +147,7 @@ export class EditorSession {
   }
 
   commandNames(): string[] {
-    return this.registryValue.names();
+    return this.env.commands.names();
   }
 
   private applyEffect(command: Command, result: CommandResult): void {

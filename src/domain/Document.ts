@@ -14,6 +14,10 @@ export interface Placement {
  *
  * Structural mutations go through this class only, because every one of them
  * has to keep the id index and the parent links consistent at the same time.
+ * Two invariants are enforced here instead of in the commands:
+ *
+ * - the whole incoming subtree must have free ids (a `box` brings two);
+ * - the old parent may veto the removal (`GroupShape.beforeRemoveChild`).
  */
 export class Document {
   private readonly rootValue = new RootShape();
@@ -85,9 +89,7 @@ export class Document {
 
   /** Inserts a shape (with its whole subtree) into the tree and the index. */
   attach(shape: Shape, parent: GroupShape | null, index?: number): void {
-    if (this.isIdTaken(shape.id)) {
-      throw new EditorError(`id already exists: ${shape.id}`);
-    }
+    this.assertSubtreeIdsFree(shape);
     const container = parent ?? this.rootValue;
     this.indexSubtree(shape);
     container.insertChild(shape, index ?? container.childCount);
@@ -99,9 +101,19 @@ export class Document {
     if (parent === null) {
       throw new EditorError(`shape is not attached: ${shape.id}`);
     }
+    parent.beforeRemoveChild(shape);
     const index = parent.removeChild(shape);
     this.unindexSubtree(shape);
     return { parent, index };
+  }
+
+  private assertSubtreeIdsFree(shape: Shape): void {
+    if (this.isIdTaken(shape.id)) {
+      throw new EditorError(`id already exists: ${shape.id}`);
+    }
+    for (const child of shape.children) {
+      this.assertSubtreeIdsFree(child);
+    }
   }
 
   private indexSubtree(shape: Shape): void {
