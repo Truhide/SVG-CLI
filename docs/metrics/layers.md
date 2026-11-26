@@ -1,0 +1,118 @@
+# 分层汇总（final → p2）
+
+| 层 | 文件数 | 行数 final | 行数 p2 | 行数增量 | 复杂度 final | 复杂度 p2 | 复杂度增量 |
+|---|---|---|---|---|---|---|---|
+| 内核（src/domain + src/application） | 73 | 2677 | 1481 | -1196 | 257 | 129 | -128 |
+| 装配处与适配器（src/host + src/cli + src/infrastructure） | 23 | 717 | 1206 | +489 | 102 | 182 | +80 |
+| 插件（src/plugins + plugins） | 48 | 0 | 2226 | +2226 | 0 | 212 | +212 |
+| 合计 | 144 | 3394 | 4913 | +1519 | 359 | 523 | +164 |
+
+## 新增/删除文件
+
+- 新增 `plugins/plugin-command-dir/DirCommand.ts`（plugin）
+- 新增 `plugins/plugin-command-dir/index.ts`（plugin）
+- 新增 `plugins/plugin-command-stats/StatsCommand.ts`（plugin）
+- 新增 `plugins/plugin-command-stats/index.ts`（plugin）
+- 新增 `plugins/plugin-decorator-modified-star/ModifiedStarDecorator.ts`（plugin）
+- 新增 `plugins/plugin-decorator-modified-star/index.ts`（plugin）
+- 新增 `plugins/plugin-shape-box/BoxAttributeHandler.ts`（plugin）
+- 新增 `plugins/plugin-shape-box/BoxLabelDecorator.ts`（plugin）
+- 新增 `plugins/plugin-shape-box/BoxProvider.ts`（plugin）
+- 新增 `plugins/plugin-shape-box/BoxShape.ts`（plugin）
+- 新增 `plugins/plugin-shape-box/index.ts`（plugin）
+- 删除 `src/application/CommandRegistry.ts`（kernel）
+- 删除 `src/application/HelpText.ts`（kernel）
+- 删除 `src/application/commands/AddToCommand.ts`（kernel）
+- 删除 `src/application/commands/BackCommand.ts`（kernel）
+- 删除 `src/application/commands/CanvasCommand.ts`（kernel）
+- 删除 `src/application/commands/CreateCommand.ts`（kernel）
+- 删除 `src/application/commands/DeleteCommand.ts`（kernel）
+- 删除 `src/application/commands/EditSessionCommand.ts`（kernel）
+- 删除 `src/application/commands/FrontCommand.ts`（kernel）
+- 删除 `src/application/commands/GroupCommand.ts`（kernel）
+- 删除 `src/application/commands/HelpCommand.ts`（kernel）
+- 删除 `src/application/commands/InitCommand.ts`（kernel）
+- 删除 `src/application/commands/MoveCommand.ts`（kernel）
+- 删除 `src/application/commands/ReadCommand.ts`（kernel）
+- 删除 `src/application/commands/RedoCommand.ts`（kernel）
+- 删除 `src/application/commands/SaveCommand.ts`（kernel）
+- 删除 `src/application/commands/ScaleCommand.ts`（kernel）
+- 删除 `src/application/commands/SessionCommand.ts`（kernel）
+- 删除 `src/application/commands/SetCommand.ts`（kernel）
+- 删除 `src/application/commands/ShowCommand.ts`（kernel）
+- 删除 `src/application/commands/TreeCommand.ts`（kernel）
+- 删除 `src/application/commands/UndoCommand.ts`（kernel）
+- 删除 `src/application/commands/UngroupCommand.ts`（kernel）
+- 新增 `src/application/extension/AttributeHandler.ts`（kernel）
+- 新增 `src/application/extension/CommandRegistry.ts`（kernel）
+- 新增 `src/application/extension/CommandSpec.ts`（kernel）
+- 新增 `src/application/extension/EditorEvents.ts`（kernel）
+- 新增 `src/application/extension/PluginContext.ts`（kernel）
+- 新增 `src/application/extension/ShapeProvider.ts`（kernel）
+- 新增 `src/application/extension/ShapeRegistry.ts`（kernel）
+- 新增 `src/application/extension/ShapeSource.ts`（kernel）
+- 新增 `src/application/extension/TreeDecorator.ts`（kernel）
+- 新增 `src/application/format/Fingerprint.ts`（kernel）
+- 新增 `src/application/format/HelpFormatter.ts`（kernel）
+- 新增 `src/application/ports/DirectoryLister.ts`（kernel）
+- 删除 `src/application/shapes/Arguments.ts`（kernel）
+- 删除 `src/application/shapes/CircleProvider.ts`（kernel）
+- 删除 `src/application/shapes/EllipseProvider.ts`（kernel）
+- 删除 `src/application/shapes/GroupProvider.ts`（kernel）
+- 删除 `src/application/shapes/LineProvider.ts`（kernel）
+- 删除 `src/application/shapes/RectProvider.ts`（kernel）
+- 删除 `src/application/shapes/ShapeFactory.ts`（kernel）
+- 删除 `src/application/shapes/ShapeProvider.ts`（kernel）
+- 删除 `src/application/shapes/ShapeSource.ts`（kernel）
+- 删除 `src/application/shapes/SourceNumbers.ts`（kernel）
+- 删除 `src/application/shapes/StyleImporter.ts`（kernel）
+- 删除 `src/application/shapes/TextProvider.ts`（kernel）
+- 删除 `src/domain/CircleShape.ts`（kernel）
+- 删除 `src/domain/EllipseShape.ts`（kernel）
+- 删除 `src/domain/LineShape.ts`（kernel）
+- 删除 `src/domain/RectShape.ts`（kernel）
+- 删除 `src/domain/ShapeVisitor.ts`（kernel）
+- 删除 `src/domain/TextShape.ts`（kernel）
+- 新增 `src/host/PluginContextFactory.ts`（host）
+- 新增 `src/host/PluginHost.ts`（host）
+- 新增 `src/host/PluginLoader.ts`（host）
+- 新增 `src/host/PluginManifest.ts`（host）
+- 新增 `src/host/assemble.ts`（host）
+- 新增 `src/infrastructure/fs/NodeDirectoryLister.ts`（host）
+- 新增 `src/plugins/builtin-commands/AddToCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/BackCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/CanvasCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/CreateCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/DeleteCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/EditSessionCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/FrontCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/GroupCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/HelpCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/InitCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/MoveCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/ReadCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/RedoCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/SaveCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/ScaleCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/SessionCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/SetCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/ShowCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/TreeCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/UndoCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/UngroupCommand.ts`（plugin）
+- 新增 `src/plugins/builtin-commands/index.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/Arguments.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/CircleProvider.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/CircleShape.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/EllipseProvider.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/EllipseShape.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/GroupProvider.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/LineProvider.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/LineShape.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/RectProvider.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/RectShape.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/SourceNumbers.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/StyleImporter.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/TextProvider.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/TextShape.ts`（plugin）
+- 新增 `src/plugins/builtin-shapes/index.ts`（plugin）

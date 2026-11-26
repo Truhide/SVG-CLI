@@ -6,3 +6,7 @@ examples/demo.svg
 
 build/
 docs/metrics/*.tmp
+
+vscode-extension/out/
+vscode-extension/.verify/
+vscode-extension/node_modules/

@@ -1,0 +1,90 @@
+@startuml
+' Lab1 Phase 2 - component view: kernel, host, plugins.
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+package "内核 src/domain + src/application" {
+  [Shape / GroupShape / RootShape\nDocument / StyleAttributes] as model
+  [EditorSession] as session
+  [CommandHistory] as history
+  [ShapeRegistry] as shapes
+  [CommandRegistry] as commands
+  [TreeDecoratorRegistry] as decorators
+  [AttributeHandlerRegistry] as attributes
+  [TreeFormatter / Fingerprint\nHelpFormatter / ShowFormatter] as format
+  [ports: DocumentCodec\nFileStore / DirectoryLister] as ports
+}
+
+package "装配处 src/host + src/cli + src/infrastructure" {
+  [PluginHost.createHost] as host
+  [assemble.ts (方式 A)] as assemble
+  [PluginLoader + PluginManifest (方式 B)] as loader
+  [PluginContextFactory] as context
+  [SvgCodec / SvgReader\nSvgWriter / SvgNodeEmitter] as codec
+  [XmlParser] as xml
+  [NodeFileStore / NodeDirectoryLister] as fs
+  [CliApp / main] as cli
+}
+
+package "插件" {
+  package "src/plugins（既有）" {
+    [builtin-shapes] as bs
+    [builtin-commands] as bc
+  }
+  package "plugins（本阶段新增）" {
+    [plugin-shape-box] as box
+    [plugin-command-stats] as stats
+    [plugin-command-dir] as dir
+    [plugin-decorator-modified-star] as star
+  }
+}
+
+cli --> host
+host --> context
+host --> assemble
+host --> loader
+host --> session
+host --> codec
+host --> fs
+assemble --> box
+assemble --> stats
+assemble --> dir
+assemble --> star
+loader ..> box : import(module string)
+loader ..> stats
+loader ..> dir
+loader ..> star
+
+session --> shapes
+session --> commands
+session --> decorators
+session --> attributes
+session --> format
+session --> ports
+session --> history
+codec --> shapes
+codec --> ports
+fs ..|> ports
+
+model <.. bs : create/import
+bs ..> shapes : register
+bc ..> commands : register
+box ..> shapes : register
+box ..> attributes : register
+box ..> decorators : register
+stats ..> commands : register
+dir ..> commands : register
+star ..> decorators : register
+star ..> ports : (none)
+
+note bottom of loader
+  No concrete plugin import, no name map,
+  no switch: modules are strings from
+  plugins.config.json.
+end note
+
+note bottom of model
+  Kernel knows no shape type by name;
+  provider lookup happens by shape.kind.
+end note
+@enduml

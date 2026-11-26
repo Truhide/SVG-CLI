@@ -1,17 +1,19 @@
 {
   "name": "svg-cli-editor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Lab1 Phase 1 - an SVG editor driven from a REPL (Command + Composite)",
+  "description": "Lab1 Phase 2 - an SVG editor driven from a REPL, rebuilt around four plugin extension points",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Truhide/SVG-CLI.git"
   },
   "scripts": {
     "cli": "tsx src/cli/main.ts",
+    "cli:config": "tsx src/cli/main.ts --config plugins.config.json",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test tests/all.test.ts"
+    "test": "node --import tsx --test tests/all.test.ts",
+    "metrics": "node scripts/metrics.mjs final p2"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -1,8 +1,8 @@
-# SVG CLI 编辑器
+# SVG CLI 编辑器（Lab1 Phase 1 + Phase 2）
 
-Lab1 Phase 1 的实现：TypeScript + 面向对象，用 **Command** 模式做编辑与撤销、用 **Composite** 模式统一容器与叶子，实现一个以 `id` 寻址的 SVG 编辑器命令行。
+TypeScript + 面向对象的 SVG 编辑器命令行：**Command** 模式做编辑与撤销、**Composite** 模式统一容器与叶子、Phase 2 把内核重构成**四个扩展点 + 插件包**的形态，并附一个 VSCode 扩展（SVG 文件标记与大纲）。
 
-**代码仓库：[https://github.com/Truhide/SVG-CLI](https://github.com/Truhide/SVG-CLI)**
+**代码仓库：[https://github.com/Truhide/SVG-CLI](https://github.com/Truhide/SVG-CLI)**（`final` = Phase 1 收尾，`p2` = Phase 2 收尾）
 
 ## 快速开始
 
@@ -12,7 +12,8 @@ Lab1 Phase 1 的实现：TypeScript + 面向对象，用 **Command** 模式做�
 git clone https://github.com/Truhide/SVG-CLI.git
 cd SVG-CLI
 npm install
-npm run cli
+npm run cli                      # 方式 A：组合根装配（内置 + 可选插件）
+npm run cli -- --config plugins.config.json   # 方式 B：配置装配
 ```
 
 启动后是一个 `svg>` 提示符的 REPL：
@@ -23,49 +24,63 @@ svg-editor 0.1 — type 'help' for commands
 
 svg> init 400 200
 canvas 400x200 created
-svg> create g flow
-g#flow created
-svg> create rect start 30 70 120 60 #4a90d9 in flow
-rect#start created in g#flow
-svg> create line edge 150 100 250 100 black in flow
-line#edge created in g#flow
-svg> save demo.svg
-saved to demo.svg (3 elements)
+svg> create box n1 120 100 160 60 "开始"
+g#n1 created
+svg> tree
+svg (400x200) *
+└── g#n1 (box) *
+    ├── rect#n1-rect   x=120 y=100 w=160 h=60 *
+    └── text#n1-label  (140,135) "开始" *
+svg> stats
+rect: 1  text: 1  (total 2, containers 1)
+svg> dir
+[DIR]  plugins
+[FILE]  package.json
 ```
 
-`save` 的输出是标准 SVG，可以直接用浏览器打开预览。
+`save` 的输出是标准 SVG，可以直接用浏览器打开预览。`box`、`stats`、`dir` 与 `*` 标签都来自插件，卸载插件（空配置）后回到 Phase 1 的命令与图形。
 
 ## 脚本回放
 
 `#` 开头的整行是注释，所以命令序列可以存成文本回放：
 
 ```bash
-npm run cli < examples/demo-commands.txt      # bash / zsh
-Get-Content examples/demo-commands.txt | npm run cli   # PowerShell
+npm run cli < doc/transcript/cli-2-box.txt
+npm run cli -- --config plugins.config.json < doc/transcript/cli-2-box.txt
 ```
+
+两种装配的输出逐字节相同（`tests/cli-assembly.test.ts`）。
 
 ## 脚本
 
 | 命令 | 说明 |
 |---|---|
-| `npm run cli` | 启动 REPL |
+| `npm run cli` | 启动 REPL（方式 A） |
+| `npm run cli -- --config plugins.config.json` | 按配置装配（方式 B） |
 | `npm test` | 运行全部测试（Node 内置 test runner + tsx） |
-| `npm run typecheck` | 只做类型检查 |
+| `npm run typecheck` | 类型检查（含 `plugins/`） |
 | `npm run build` | 编译到 `dist/` |
+| `node scripts/metrics.mjs final p2` | 从 git 历史生成 `docs/metrics/` |
 
 ## 目录
 
 ```text
 src/
-  domain/          # 图形模型：Shape 类层次、GroupShape、Document、Transform2D
-  application/     # 用例：Command/历史/会话、图形与命令注册表、端口、文本呈现
-  infrastructure/  # 适配器：XML 解析、SVG 读写、Node 文件系统
-  cli/             # 驱动：REPL、输出、组合根 main.ts
+  domain/          # 内核模型：Shape/GroupShape/Document/StyleAttributes
+  application/     # 内核用例：session、注册表、扩展点接口、format、ports
+  host/            # 装配处：PluginHost、assemble(A)、PluginLoader(B)、manifest
+  infrastructure/  # 适配器：XML/SVG 读写、Node 文件系统与目录
+  plugins/         # 既有插件包：builtin-shapes、builtin-commands
+  cli/             # 驱动：REPL、输出、入口 main.ts
+plugins/           # 新增插件包：box、stats、dir、modified-star
+vscode-extension/  # 第一部分：VSCode 扩展（文件标记 + SVG 大纲）
 tests/             # node:test 用例与测试替身
-examples/          # 可回放的命令脚本与示例 SVG
-doc/               # 架构方案、过程记录、一致性自查、质量保证（作业文档）
+doc/               # 设计文档、ADR、transcript、架构图
+docs/metrics/      # 由脚本生成的指标
 ```
 
 ## 文档
 
-设计说明、设计模式落地、依赖规则、变化点假设、过程记录与自查见 [`doc/README.md`](doc/README.md)。
+- Phase 2 设计说明：[`doc/README.md`](doc/README.md)（扩展点清单、两种装配、ADR、指标、过程记录）
+- VSCode 扩展：[`doc/vscode-extension.md`](doc/vscode-extension.md)
+- 指标：[`docs/metrics/README.md`](docs/metrics/README.md)
